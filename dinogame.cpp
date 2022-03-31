@@ -1,186 +1,153 @@
-#include <iostream> 
-#include <conio.h> 
+#include <stdio.h>
+#include <conio.h>
+#include <iostream>
 #include <time.h>
 #include <windows.h>
-
-#define dinoPos 2
-#define hurdlePos 74
-
-using namespace std;
-
-HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-COORD CursorPosition;
-
-int dinoY;
-int speed = 40;
-int gameover = 0;
-
-void gotoxy(int x, int y) {
-    COORD coord;
-    coord.X = x;
-    coord.Y = y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+void gotoxy(int x, int y)
+{
+ COORD coord;
+ coord.X = x;
+ coord.Y = y;
+ SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
-
-void setcursor(bool visible, DWORD size){
-    if (size == 0) {
-        size = 20; // default cursor size Changing to numbers from 1 to 20, decreases cursor width
-    }
-    CONSOLE_CURSOR_INFO lpCursor;
-    lpCursor.bVisible = visible;
-    lpCursor.dwSize = size;
-    SetConsoleCursorInfo(console, & lpCursor);
+void delay(unsigned int mseconds)
+{
+    clock_t goal = mseconds + clock();
+    while (goal > clock());
 }
- 
-void init() {
-    system("cls"); 
-    gameover = 0;
-    gotoxy(3, 2); cout<<"SCORE : ";
-    for (int i = 0; i < 79; i++){
-    	gotoxy(1+i, 1); cout<<"ß";
-    	gotoxy(1+i, 25); cout<<"ß";
-	} 
-}
-
-void moveDino(int jump = 0) {
-    static int foot = 0;
-
-    if (jump == 0)
-        dinoY = 0;
-    else if (jump == 2)
-        dinoY--;
-    else dinoY++;
-
-    gotoxy(dinoPos, 15 - dinoY);cout<<"                 ";
-    gotoxy(dinoPos, 16 - dinoY);cout<<"         ÜÛßÛÛÛÛÜ";
-    gotoxy(dinoPos, 17 - dinoY);cout<<"         ÛÛÛÛÛÛÛÛ";
-    gotoxy(dinoPos, 18 - dinoY);cout<<"         ÛÛÛÛÛßßß";
-    gotoxy(dinoPos, 19 - dinoY);cout<<" Û      ÜÛÛÛÛßßß ";
-    gotoxy(dinoPos, 20 - dinoY);cout<<" ÛÛÜ  ÜÛÛÛÛÛÛÜÜÜ ";
-    gotoxy(dinoPos, 21 - dinoY);cout<<" ßÛÛÛÛÛÛÛÛÛÛÛ  ß ";
-    gotoxy(dinoPos, 22 - dinoY);cout<<"   ßÛÛÛÛÛÛÛß     ";
-    gotoxy(dinoPos, 23 - dinoY);
-
-    if (jump == 1 || jump == 2) {
-        cout<<"    ÛÛß ßÛ       ";
-        gotoxy(2, 24 - dinoY);
-        cout<<"    ÛÜ   ÛÜ      ";
-    } 
-	else if (foot == 0) {
-        cout<<"    ßÛÛß  ßßß    ";
-        gotoxy(2, 24 - dinoY);
-        cout<<"      ÛÜ         ";
-        foot = !foot;
-    } 
-	else if (foot == 1) {
-        cout<<"     ßÛÜ ßÛ      ";
-        gotoxy(2, 24 - dinoY);
-        cout<<"          ÛÜ     ";
-        foot = !foot;
-    }
-    
-    gotoxy(2, 25 - dinoY);
-    if (jump == 0) {
-        cout<<"ßßßßßßßßßßßßßßßßß";
-    } else {
-        cout<<"                ";
-    } 
-    Sleep(speed);
-}
-void drawHurdle() {
-    static int plantX = 0;
-	static int score = 0;
-    if (plantX == 56 && dinoY < 4) {
-        score = 0;
-        speed = 40;
-        gotoxy(36, 8);cout<<"Game Over";
-        getch();
-        gameover = 1; 
-    }
-    
-    gotoxy(hurdlePos - plantX, 20);cout<<"| | ";
-    gotoxy(hurdlePos - plantX, 21);cout<<"| | ";
-    gotoxy(hurdlePos - plantX, 22);cout<<"|_| ";
-    gotoxy(hurdlePos - plantX, 23);cout<<" |  ";
-    gotoxy(hurdlePos - plantX, 24);cout<<" |  ";
-     
-    plantX++;
-    
-    if (plantX == 73) {
-        plantX = 0;
-        score++;
-        gotoxy(11, 2);cout<<"     ";
-        gotoxy(11, 2);cout<<score;
-        if (speed > 20)
-            speed--;
-    }
-}
-void play(){ 
+void getup()
+{
 	system("cls");
-    char ch;
-    int i;
-	init();
-    while (true) {
-        while (!kbhit()) {
-            if( gameover==1 ){
-            	return;
-			}
-			moveDino();
-            drawHurdle();
-        }
-        ch = getch();
-        if (ch == 32) {
-        	i = 0;
-            while( i < 12) {
-                moveDino(1);
-                drawHurdle();
-                i++;
-            }
-            while(i > 0) {
-                moveDino(2);
-                drawHurdle();
-                i--;
-        	}
-        }
-		else if (ch == 'p'||ch=='P')
-           getch();
-		else if (ch == 27)
-           break;
-    }
+	gotoxy(10,2);
+	printf("Press X to Exit, Press Space to Jump");
+	printf("\n   by Maitreyi R");
+	gotoxy(62,2);
+	printf("SCORE : ");
+	gotoxy(1,25);
+	for(int x=0;x<79;x++)
+	printf("ß");
 }
 
-void instructions() {
-	system("cls");
-	cout<<"Instructions";
-	cout<<"\n----------------";
-	cout<<"\n1. Avoid hurdles by jumping";
-	cout<<"\n2. Press 'Spacebar' to jump ";
-	cout<<"\n3. Press 'p' to pause game ";
-	cout<<"\n4. Press 'Escape' to exit from game";
-	cout<<"\n\nPress any key to go back to menu";
+int t,speed=40;
+void ds(int jump=0)
+{
+	static int a=1;
+
+	if(jump==0)
+		t=0;
+	else if(jump==2)
+		t--;
+	else t++;
+	gotoxy(2,15-t);
+	printf("                 ");
+	gotoxy(2,16-t);
+	printf("         ÜÛßÛÛÛÛÜ");
+	gotoxy(2,17-t);
+	printf("         ÛÛÛÛÛÛÛÛ");
+	gotoxy(2,18-t);
+	printf("         ÛÛÛÛÛßßß");
+	gotoxy(2,19-t);
+	printf(" Û      ÜÛÛÛÛßßß ");
+	gotoxy(2,20-t);
+	printf(" ÛÛÜ  ÜÛÛÛÛÛÛÜÜÜ ");
+	gotoxy(2,21-t);
+	printf(" ßÛÛÛÛÛÛÛÛÛÛÛ  ß ");
+	gotoxy(2,22-t);
+	printf("   ßÛÛÛÛÛÛÛß     ");
+	gotoxy(2,23-t);
+	if(jump==1 || jump==2){
+	printf("    ÛÛß ßÛ       ");
+	gotoxy(2,24-t);
+	printf("    ÛÜ   ÛÜ      ");
+	}else if(a==1)
+	{
+	printf("    ßÛÛß  ßßß    ");
+	gotoxy(2,24-t);
+	printf("      ÛÜ         ");
+	a=2;
+	}
+	else if(a==2)
+	{
+	printf("     ßÛÜ ßÛ      ");
+	gotoxy(2,24-t);
+	printf("          ÛÜ     ");
+	a=1;
+	}
+	gotoxy(2,25-t);
+	if(jump!=0){
+		printf("                ");
+	}
+	else
+	{
+
+		printf("ßßßßßßßßßßßßßßßßß");
+	}
+	delay(speed);
+}
+void obj()
+{
+	static int x=0,scr=0;
+	if(x==56 && t<4)
+	{
+	scr=0;
+	speed=40;
+	gotoxy(36,8);
+	printf("Game Over");
 	getch();
+	gotoxy(36,8);
+	printf("         ");
+	}
+	gotoxy(74-x,20);
+	printf("Û    Û ");
+	gotoxy(74-x,21);
+	printf("Û    Û ");
+	gotoxy(74-x,22);
+	printf("ÛÜÜÜÜÛ ");
+	gotoxy(74-x,23);
+	printf("  Û    ");
+	gotoxy(74-x,24);
+	printf("  Û  " );
+	x++;
+	if(x==73)
+	{
+	x=0;
+	scr++;
+	gotoxy(70,2);
+	printf("     ");
+	gotoxy(70,2);
+	printf("%d",scr);
+	if(speed>20)
+		speed--;
+	}
 }
-
-int main() {
-
-    setcursor(0, 0);
-    
-    do{
-		system("cls");
-		gotoxy(10,5); cout<<" -------------------------- "; 
-		gotoxy(10,6); cout<<" |        DINO RUN        | ";  
-		gotoxy(10,7); cout<<" -------------------------- ";
-		gotoxy(10,9); cout<<"1. Start Game";
-		gotoxy(10,10); cout<<"2. Instructions";	 
-		gotoxy(10,11); cout<<"3. Quit";
-		gotoxy(10,13); cout<<"Select option: ";
-		char op = getche();
-		
-		if( op=='1') play();
-		else if( op=='2') instructions();
-		else if( op=='3') exit(0);
-		
-	}while(1);
-    
-	return 0;
+int main()
+{
+	system("mode con: lines=29 cols=82");
+	char ch;
+	int i;
+	getup();
+	while(true)
+	{
+		while(!kbhit())
+		{
+			ds();
+			obj();
+		}
+		ch=getch();
+		if(ch==' ')
+		{
+			for(i=0;i<10;i++)
+			{
+			ds(1);
+			obj();
+			}
+			for(i=0;i<10;i++)
+			{
+			ds(2);
+			obj();
+			}
+		}
+		else if (ch=='x')
+			return(0);
+	}
 }
